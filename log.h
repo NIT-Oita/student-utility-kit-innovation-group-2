@@ -1,7 +1,7 @@
 #ifndef LOG_H
 #define LOG_H
 
-// ƒƒO1Œ•ª‚Ì\‘¢‘Ì
+// ãƒ­ã‚°1ä»¶åˆ†ã®æ§‹é€ ä½“
 typedef struct {
     char timestamp[32];
     char action[16];     // "move", "mkdir", "rmdir"
@@ -9,13 +9,13 @@ typedef struct {
     char dst[256];
 } LogRecord;
 
-// ƒƒO‘‚«‚İ
+// ãƒ­ã‚°æ›¸ãè¾¼ã¿
 void log_write(const char* action, const char* src, const char* dst);
 
-// ƒƒO•\¦
+// ãƒ­ã‚°è¡¨ç¤º
 void log_print(void);
 
-// w’èŒ”–ß‚·i–ß‚µ‚½•ª‚ÌƒƒO‚Ííœj
+// æŒ‡å®šä»¶æ•°æˆ»ã™ï¼ˆæˆ»ã—ãŸåˆ†ã®ãƒ­ã‚°ã¯å‰Šé™¤ï¼‰
 void log_back(int count);
 
 #endif
