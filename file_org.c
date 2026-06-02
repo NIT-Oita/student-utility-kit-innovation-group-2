@@ -121,20 +121,44 @@ delete_backup()
 ==================================================*/
 int delete_backup(const char *backup_dir)
 {
-char cmd[1024];
+    char cmd[1024];
 
+    if (backup_dir == NULL)
+    {
+        return 1;
+    }
 
-sprintf(
-    cmd,
-    "rmdir /S /Q \"%s\" > nul 2>&1",
-    backup_dir
-);
+    if (backup_dir[0] == '\0')
+    {
+        return 1;
+    }
 
-return system(cmd);
+    if (strlen(backup_dir) >= 900)
+    {
+        return 1;
+    }
 
+    int ret = snprintf(
+        cmd,
+        sizeof(cmd),
+        "rmdir /S /Q \"%s\" > nul 2>&1",
+        backup_dir
+    );
 
+    if (ret < 0 || ret >= (int)sizeof(cmd))
+    {
+        return 1;
+    }
+
+    ret = system(cmd);
+
+    if (ret != 0)
+    {
+        return 1;
+    }
+
+    return 0;
 }
-
 /*==================================================
 backup_folder()
 
