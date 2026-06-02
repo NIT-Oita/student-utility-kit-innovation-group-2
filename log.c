@@ -3,85 +3,77 @@
 #include <string.h>
 #include <time.h>
 #include "log.h"
-#include "file_org.h"
 
 #define LOG_FILE "log.txt"
-#define MAX_LINE 512
-#define MAX_RECORDS 1024
 
-/*==================================================
-  ログ構造体
-==================================================*/
-typedef struct {
-    char timestamp[32];
-    char action[16];
-    char src[256];
-    char dst[256];
-} LogRecord;
+void log_write(
+    const char *action,
+    const char *src,
+    const char *dst
+)
+{
+    FILE *fp;
 
-/*==================================================
-  ログ書き込みルール
+    /* 追記モードで開く */
+    fp = fopen(LOG_FILE, "a");
 
-  timestamp|action|src|dst
-
-  例:
-  2026-05-26 12:00:00|move|A.txt|B.txt
-
-  ※ 区切り文字 "|" を含む名前は禁止
-==================================================*/
-
-/*==================================================
-  ログ書き込み
-  成功:0 失敗:1
-==================================================*/
-int log_write(const char* action,const char* src,const char* dst) {
-
-    if (!action || !src || !dst) return 1;
-
-    FILE* fp = fopen(LOG_FILE,"a");
-    if (!fp) return 1;
-
-    time_t t = time(NULL);
-    struct tm* tm_info = localtime(&t);
-
-    if (!tm_info) {
-        fclose(fp);
-        return 1;
+    if(fp == NULL)
+    {
+        return;
     }
 
-    char timestamp[32];
+    /* 現在時刻取得 */
+    time_t now = time(NULL);
 
-    if (strftime(timestamp,sizeof(timestamp),"%Y-%m-%d %H:%M:%S",tm_info) == 0) {
+    struct tm *t = localtime(&now);
 
+    if(t == NULL)
+    {
         fclose(fp);
-        return 1;
+        return;
     }
 
-    if (fprintf(fp,"%s|%s|%s|%s\n",timestamp,action,src,dst) < 0) {
-
-        fclose(fp);
-        return 1;
-    }
+    /* ログ出力 */
+    fprintf(
+        fp,
+        "%04d-%02d-%02d %02d:%02d:%02d|%s|%s|%s\n",
+        t->tm_year + 1900,
+        t->tm_mon + 1,
+        t->tm_mday,
+        t->tm_hour,
+        t->tm_min,
+        t->tm_sec,
+        action,
+        src,
+        dst
+    );
 
     fclose(fp);
-    return 0;
 }
 
-/*==================================================
-  ログ表示
-  成功:0 失敗:1
-==================================================*/
-int log_print(void) {
+void log_print(void)
+{
+    FILE *fp;
 
-    FILE* fp = fopen(LOG_FILE,"r");
-    if (!fp) return 1;
+    fp = fopen(LOG_FILE, "r");
 
-    char line[MAX_LINE];
-
-    while (fgets(line,sizeof(line),fp)) {
-        printf("%s",line);
+    if(fp == NULL)
+    {
+        printf("ログファイルが存在しません。\n");
+        return;
     }
 
+    char line[1024];
+
+    printf("\n");
+    printf("========== LOG ==========\n");
+
+    while(fgets(line, sizeof(line), fp) != NULL)
+    {
+        printf("%s", line);
+    }
+
+    printf("=========================\n");
+
     fclose(fp);
-    return 0;
 }
