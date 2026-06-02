@@ -387,3 +387,51 @@ int org(void)
 
     return 0;
 }
+
+/*==================================================
+backup_start()
+
+残っているバックアップから復元する。
+
+戻り値
+    0 : 成功
+    1 : 失敗
+
+==================================================*/
+int backup_start(void)
+{
+    Config cfg;
+
+    if(load_config(&cfg))
+    {
+        return 1;
+    }
+
+    struct stat st;
+
+    /* バックアップが存在しない */
+    if(stat(cfg.backup_dir, &st) != 0)
+    {
+        printf("バックアップは存在しません\n");
+        return 1;
+    }
+
+    printf("バックアップを発見\n");
+    printf("復元開始\n");
+
+    /* 現在の整理済みフォルダ削除 */
+    delete_backup(cfg.target_dir);
+
+    /* バックアップから復元 */
+    if(restore_folder(
+            cfg.backup_dir,
+            cfg.target_dir))
+    {
+        printf("復元失敗\n");
+        return 1;
+    }
+
+    printf("復元完了\n");
+
+    return 0;
+}
