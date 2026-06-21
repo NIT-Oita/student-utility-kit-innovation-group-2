@@ -2,6 +2,7 @@
 #include <conio.h>
 #include "ui.h"
 #include "log.h"
+#include "time_tag_management.h"
 
 void home_menu();
 void classify_menu();
@@ -124,23 +125,23 @@ void tag_menu() {
         system("cls");
         switch (choice) {
             case 0:
-                name();
+                listTags();
                 break;
 
             case 1:
-                name();
+                createTag();
                 break;
 
             case 2:
-                name();
+                deleteTag();
                 break;
 
             case 3:
-                name();
+                addFile();
                 break;
 
             case 4:
-                name();
+                removeFile();
                 break;
 
             case 5:
