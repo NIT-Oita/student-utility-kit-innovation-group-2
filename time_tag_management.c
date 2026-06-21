@@ -8,17 +8,18 @@
 #define MAX_FILES 50
 #define MAX_LEN 200
 
+// タグ1つのデータ
 typedef struct {
     char tag[50];
     char files[MAX_FILES][MAX_LEN];
     int fileCount;
 } Tag;
 
+// 全タグ
 Tag tags[MAX_TAGS];
 int tagCount = 0;
 
-/* -------- load -------- */
-
+/* ===== 読み込み ===== */
 void loadTags() {
     FILE *fp = fopen("tag.txt", "r");
     if (!fp) return;
@@ -44,8 +45,7 @@ void loadTags() {
     fclose(fp);
 }
 
-/* -------- save -------- */
-
+/* ===== 保存 ===== */
 void saveTags() {
     FILE *fp = fopen("tag.txt", "w");
     if (!fp) return;
@@ -63,20 +63,19 @@ void saveTags() {
     fclose(fp);
 }
 
-/* -------- file select -------- */
-
+/* ===== ファイル選択 ===== */
 void selectFile(char *out) {
     DIR *dir = opendir(".");
-
     struct dirent *d;
+
     char list[100][256];
     int i = 0;
 
-    printf("=== files ===\n");
+    printf("files:\n");
 
     while ((d = readdir(dir)) != NULL) {
         if (d->d_type == DT_REG) {
-            printf("%d : %s\n", i, d->d_name);
+            printf("%d:%s\n", i, d->d_name);
             strcpy(list[i], d->d_name);
             i++;
         }
@@ -85,7 +84,7 @@ void selectFile(char *out) {
     closedir(dir);
 
     int sel;
-    printf("select file : ");
+    printf("select file: ");
     scanf("%d", &sel);
 
     if (sel < 0 || sel >= i) return;
@@ -93,18 +92,17 @@ void selectFile(char *out) {
     strcpy(out, list[sel]);
 }
 
-/* -------- tag select -------- */
-
+/* ===== タグ選択 ===== */
 void selectTag(char *out) {
 
-    printf("=== tags ===\n");
+    printf("tags:\n");
 
     for (int i = 0; i < tagCount; i++) {
-        printf("%d : %s\n", i, tags[i].tag);
+        printf("%d:%s\n", i, tags[i].tag);
     }
 
     int sel;
-    printf("select tag : ");
+    printf("select tag: ");
     scanf("%d", &sel);
 
     if (sel < 0 || sel >= tagCount) return;
@@ -112,8 +110,7 @@ void selectTag(char *out) {
     strcpy(out, tags[sel].tag);
 }
 
-/* -------- core -------- */
-
+/* ===== タグ作成 ===== */
 void createTag(char *tag, char *file) {
     strcpy(tags[tagCount].tag, tag);
     strcpy(tags[tagCount].files[0], file);
@@ -121,7 +118,9 @@ void createTag(char *tag, char *file) {
     tagCount++;
 }
 
+/* ===== ファイル追加 ===== */
 void addFile(char *tag, char *file) {
+
     for (int i = 0; i < tagCount; i++) {
         if (strcmp(tags[i].tag, tag) == 0) {
             strcpy(tags[i].files[tags[i].fileCount], file);
@@ -129,22 +128,29 @@ void addFile(char *tag, char *file) {
             return;
         }
     }
+
     createTag(tag, file);
 }
 
+/* ===== タグ削除 ===== */
 void deleteTag(char *tag) {
+
     for (int i = 0; i < tagCount; i++) {
         if (strcmp(tags[i].tag, tag) == 0) {
+
             for (int j = i; j < tagCount - 1; j++) {
                 tags[j] = tags[j + 1];
             }
+
             tagCount--;
             return;
         }
     }
 }
 
+/* ===== ファイル削除 ===== */
 void removeFile(char *tag, char *file) {
+
     for (int i = 0; i < tagCount; i++) {
         if (strcmp(tags[i].tag, tag) == 0) {
 
@@ -163,10 +169,9 @@ void removeFile(char *tag, char *file) {
     }
 }
 
-/* -------- list -------- */
-
+/* ===== 一覧表示 ===== */
 void listTags() {
     for (int i = 0; i < tagCount; i++) {
-        printf("%d : %s\n", i, tags[i].tag);
+        printf("%d:%s\n", i, tags[i].tag);
     }
 }
