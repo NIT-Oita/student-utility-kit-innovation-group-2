@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <dirent.h>
+#include "tag.h"
 
 #define MAX_TAGS 50
 #define MAX_FILES 50
@@ -15,23 +17,24 @@ typedef struct {
 Tag tags[MAX_TAGS];
 int tagCount = 0;
 
-void loadTags() {
+/* -------- load -------- */
 
+void loadTags() {
     FILE *fp = fopen("tag.txt", "r");
-    if (fp == NULL) return;
+    if (!fp) return;
 
     char line[512];
 
     while (fgets(line, sizeof(line), fp)) {
 
-        char *token = strtok(line, " \n");
-        if (!token) continue;
+        char *p = strtok(line, " \n");
+        if (!p) continue;
 
-        strcpy(tags[tagCount].tag, token);
+        strcpy(tags[tagCount].tag, p);
         tags[tagCount].fileCount = 0;
 
-        while ((token = strtok(NULL, " \n")) != NULL) {
-            strcpy(tags[tagCount].files[tags[tagCount].fileCount], token);
+        while ((p = strtok(NULL, " \n")) != NULL) {
+            strcpy(tags[tagCount].files[tags[tagCount].fileCount], p);
             tags[tagCount].fileCount++;
         }
 
@@ -41,12 +44,13 @@ void loadTags() {
     fclose(fp);
 }
 
-void saveTags() {
+/* -------- save -------- */
 
+void saveTags() {
     FILE *fp = fopen("tag.txt", "w");
+    if (!fp) return;
 
     for (int i = 0; i < tagCount; i++) {
-
         fprintf(fp, "%s", tags[i].tag);
 
         for (int j = 0; j < tags[i].fileCount; j++) {
@@ -59,130 +63,110 @@ void saveTags() {
     fclose(fp);
 }
 
-void addNewTag(char *tagName, char *filePath) {
+/* -------- file select -------- */
 
-    strcpy(tags[tagCount].tag, tagName);
-    strcpy(tags[tagCount].files[0], filePath);
+void selectFile(char *out) {
+    DIR *dir = opendir(".");
+
+    struct dirent *d;
+    char list[100][256];
+    int i = 0;
+
+    printf("=== files ===\n");
+
+    while ((d = readdir(dir)) != NULL) {
+        if (d->d_type == DT_REG) {
+            printf("%d : %s\n", i, d->d_name);
+            strcpy(list[i], d->d_name);
+            i++;
+        }
+    }
+
+    closedir(dir);
+
+    int sel;
+    printf("select file : ");
+    scanf("%d", &sel);
+
+    if (sel < 0 || sel >= i) return;
+
+    strcpy(out, list[sel]);
+}
+
+/* -------- tag select -------- */
+
+void selectTag(char *out) {
+
+    printf("=== tags ===\n");
+
+    for (int i = 0; i < tagCount; i++) {
+        printf("%d : %s\n", i, tags[i].tag);
+    }
+
+    int sel;
+    printf("select tag : ");
+    scanf("%d", &sel);
+
+    if (sel < 0 || sel >= tagCount) return;
+
+    strcpy(out, tags[sel].tag);
+}
+
+/* -------- core -------- */
+
+void createTag(char *tag, char *file) {
+    strcpy(tags[tagCount].tag, tag);
+    strcpy(tags[tagCount].files[0], file);
     tags[tagCount].fileCount = 1;
-
     tagCount++;
 }
 
-void addFileToTag(char *tagName, char *filePath) {
-
+void addFile(char *tag, char *file) {
     for (int i = 0; i < tagCount; i++) {
-
-        if (strcmp(tags[i].tag, tagName) == 0) {
-
-            strcpy(tags[i].files[tags[i].fileCount], filePath);
+        if (strcmp(tags[i].tag, tag) == 0) {
+            strcpy(tags[i].files[tags[i].fileCount], file);
             tags[i].fileCount++;
-
             return;
         }
     }
-
-    addNewTag(tagName, filePath);
+    createTag(tag, file);
 }
 
-void tag(){
-
-    loadTags();
-
-    char tag[50];
-    char path[200];
-
-    int mode;
-
-    printf("1:新規タグ 2:追加 : ");
-    scanf("%d", &mode);
-
-    printf("タグ名 : ");
-    scanf("%s", tag);
-
-    printf("ファイルパス : ");
-    scanf("%s", path);
-
-    if (mode == 1) {
-        addNewTag(tag, path);
-    } else {
-        addFileToTag(tag, path);
-    }
-
-    saveTags();
-
-    printf("保存した\n");
-
-    return;
-}
-
-void time_management(){
-
-    FILE *fp = fopen("tag.txt", "r");
-
-    if (fp == NULL) {
-        printf("tag.txtが開けません\n");
-        return;
-    }
-
-    char line[512];
-    char tags[50][50];
-    int tagCount = 0;
-
-    printf("=== タグ一覧 ===\n");
-
-    // タグ一覧取得
-    while (fgets(line, sizeof(line), fp)) {
-
-        char tag[50];
-        sscanf(line, "%s", tag);
-
-        strcpy(tags[tagCount], tag);
-
-        printf("%d : %s\n", tagCount, tag);
-
-        tagCount++;
-    }
-
-    rewind(fp);
-
-    int select;
-    printf("\nタグ番号 : ");
-    scanf("%d", &select);
-
-    if (select < 0 || select >= tagCount) {
-        printf("無効な番号\n");
-        return;
-    }
-
-    char targetTag[50];
-    strcpy(targetTag, tags[select]);
-
-    printf("\n=== %s のファイル ===\n", targetTag);
-
-    while (fgets(line, sizeof(line), fp)) {
-
-        char tag[50];
-
-        char *p = strtok(line, " \n");
-
-        if (p == NULL) continue;
-
-        strcpy(tag, p);
-
-        if (strcmp(tag, targetTag) == 0) {
-
-            int i = 0;
-
-            while ((p = strtok(NULL, " \n")) != NULL) {
-                printf("%d : %s\n", i, p);
-                i++;
+void deleteTag(char *tag) {
+    for (int i = 0; i < tagCount; i++) {
+        if (strcmp(tags[i].tag, tag) == 0) {
+            for (int j = i; j < tagCount - 1; j++) {
+                tags[j] = tags[j + 1];
             }
-
-            break;
+            tagCount--;
+            return;
         }
     }
+}
 
-    fclose(fp);
+void removeFile(char *tag, char *file) {
+    for (int i = 0; i < tagCount; i++) {
+        if (strcmp(tags[i].tag, tag) == 0) {
 
-    return;
+            for (int j = 0; j < tags[i].fileCount; j++) {
+                if (strcmp(tags[i].files[j], file) == 0) {
+
+                    for (int k = j; k < tags[i].fileCount - 1; k++) {
+                        strcpy(tags[i].files[k], tags[i].files[k + 1]);
+                    }
+
+                    tags[i].fileCount--;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+/* -------- list -------- */
+
+void listTags() {
+    for (int i = 0; i < tagCount; i++) {
+        printf("%d : %s\n", i, tags[i].tag);
+    }
 }
