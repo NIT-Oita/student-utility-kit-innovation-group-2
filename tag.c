@@ -8,18 +8,18 @@
 #define MAX_FILES 50
 #define MAX_LEN 200
 
-// ã‚¿ã‚°1ã¤ã®ãƒ‡ãƒ¼ã‚¿
+// ƒ^ƒO1‚Â‚Ìƒf[ƒ^
 typedef struct {
     char tag[50];
     char files[MAX_FILES][MAX_LEN];
     int fileCount;
 } Tag;
 
-// å…¨ã‚¿ã‚°
+// ‘Sƒ^ƒO
 Tag tags[MAX_TAGS];
 int tagCount = 0;
 
-/* ===== èª­ã¿è¾¼ã¿ ===== */
+/* ===== “Ç‚İ‚İ ===== */
 void loadTags() {
     FILE *fp = fopen("tag.txt", "r");
     if (!fp) return;
@@ -45,7 +45,7 @@ void loadTags() {
     fclose(fp);
 }
 
-/* ===== ä¿å­˜ ===== */
+/* ===== •Û‘¶ ===== */
 void saveTags() {
     FILE *fp = fopen("tag.txt", "w");
     if (!fp) return;
@@ -63,7 +63,7 @@ void saveTags() {
     fclose(fp);
 }
 
-/* ===== ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠ ===== */
+/* ===== ƒtƒ@ƒCƒ‹‘I‘ğ ===== */
 void selectFile(char *out) {
     DIR *dir = opendir(".");
     struct dirent *d;
@@ -73,12 +73,17 @@ void selectFile(char *out) {
 
     printf("files:\n");
 
-    while ((d = readdir(dir)) != NULL) {
-        if (d->d_type == DT_REG) {
-            printf("%d:%s\n", i, d->d_name);
-            strcpy(list[i], d->d_name);
-            i++;
+    while ((d = readdir(dir)) != NULL)
+    {
+        if (strcmp(d->d_name, ".") == 0 ||
+            strcmp(d->d_name, "..") == 0)
+        {
+            continue;
         }
+
+        printf("%d:%s\n", i, d->d_name);
+        strcpy(list[i], d->d_name);
+        i++;
     }
 
     closedir(dir);
@@ -87,12 +92,15 @@ void selectFile(char *out) {
     printf("select file: ");
     scanf("%d", &sel);
 
-    if (sel < 0 || sel >= i) return;
+    if (sel < 0 || sel >= i)
+    {
+        return;
+    }
 
     strcpy(out, list[sel]);
 }
 
-/* ===== ã‚¿ã‚°é¸æŠ ===== */
+/* ===== ƒ^ƒO‘I‘ğ ===== */
 void selectTag(char *out) {
 
     printf("tags:\n");
@@ -110,7 +118,7 @@ void selectTag(char *out) {
     strcpy(out, tags[sel].tag);
 }
 
-/* ===== ã‚¿ã‚°ä½œæˆ ===== */
+/* ===== ƒ^ƒOì¬ ===== */
 void createTag(char *tag, char *file) {
     strcpy(tags[tagCount].tag, tag);
     strcpy(tags[tagCount].files[0], file);
@@ -118,7 +126,7 @@ void createTag(char *tag, char *file) {
     tagCount++;
 }
 
-/* ===== ãƒ•ã‚¡ã‚¤ãƒ«è¿½åŠ  ===== */
+/* ===== ƒtƒ@ƒCƒ‹’Ç‰Á ===== */
 void addFile(char *tag, char *file) {
 
     for (int i = 0; i < tagCount; i++) {
@@ -132,7 +140,7 @@ void addFile(char *tag, char *file) {
     createTag(tag, file);
 }
 
-/* ===== ã‚¿ã‚°å‰Šé™¤ ===== */
+/* ===== ƒ^ƒOíœ ===== */
 void deleteTag(char *tag) {
 
     for (int i = 0; i < tagCount; i++) {
@@ -148,30 +156,67 @@ void deleteTag(char *tag) {
     }
 }
 
-/* ===== ãƒ•ã‚¡ã‚¤ãƒ«å‰Šé™¤ ===== */
-void removeFile(char *tag, char *file) {
+/* ===== ƒtƒ@ƒCƒ‹íœ ===== */
+void removeFile(char *tag, char *file)
+{
+    int fileSel;
 
-    for (int i = 0; i < tagCount; i++) {
-        if (strcmp(tags[i].tag, tag) == 0) {
+    for (int i = 0; i < tagCount; i++)
+    {
+        if (strcmp(tags[i].tag, tag) == 0)
+        {
+            printf("\n[%s]\n", tags[i].tag);
 
-            for (int j = 0; j < tags[i].fileCount; j++) {
-                if (strcmp(tags[i].files[j], file) == 0) {
-
-                    for (int k = j; k < tags[i].fileCount - 1; k++) {
-                        strcpy(tags[i].files[k], tags[i].files[k + 1]);
-                    }
-
-                    tags[i].fileCount--;
-                    return;
-                }
+            for (int j = 0; j < tags[i].fileCount; j++)
+            {
+                printf("%d:%s\n", j, tags[i].files[j]);
             }
+
+            printf("select file: ");
+            scanf("%d", &fileSel);
+
+            if (fileSel < 0 || fileSel >= tags[i].fileCount)
+            {
+                return;
+            }
+
+            for (int k = fileSel; k < tags[i].fileCount - 1; k++)
+            {
+                strcpy(tags[i].files[k], tags[i].files[k + 1]);
+            }
+
+            tags[i].fileCount--;
+
+            return;
         }
     }
 }
 
-/* ===== ä¸€è¦§è¡¨ç¤º ===== */
-void listTags() {
-    for (int i = 0; i < tagCount; i++) {
+/* ===== ˆê——•\¦ ===== */
+void listTags()
+{
+    if (tagCount == 0)
+    {
+        printf("ƒ^ƒO‚Í“o˜^‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ\n");
+        return;
+    }
+
+    for (int i = 0; i < tagCount; i++)
+    {
         printf("%d:%s\n", i, tags[i].tag);
+
+        if (tags[i].fileCount == 0)
+        {
+            printf("  (ƒtƒ@ƒCƒ‹‚È‚µ)\n");
+        }
+        else
+        {
+            for (int j = 0; j < tags[i].fileCount; j++)
+            {
+                printf("  - %s\n", tags[i].files[j]);
+            }
+        }
+
+        printf("\n");
     }
 }

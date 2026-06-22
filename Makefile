@@ -11,10 +11,10 @@ OBJS = $(SRCS:.c=.o)
 # make
 all: rebuild
 
-# 一度削除してから作り直す
+# ��x�폜���Ă����蒼��
 rebuild: clean $(TARGET)
 
-# exe作成
+# exe�쐬
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
@@ -22,7 +22,7 @@ $(TARGET): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# ヘッダファイル変更時も再コンパイル
+# �w�b�_�t�@�C���ύX�����ăR���p�C��
 $(OBJS): $(wildcard *.h)
 
 # make done

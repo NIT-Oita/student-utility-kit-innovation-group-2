@@ -1,12 +1,32 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
 #include "ui.h"
 #include "log.h"
-#include "time_tag_management.h"
+#include "tag.h"
 
+void wait_back_menu();
 void home_menu();
 void classify_menu();
 void tag_menu();
+void name(void);
+
+// テスト用
+void name(void)
+{
+    printf("DEMO\n");
+    printf("まだ実装されていません\n");
+
+    log_write(
+        "CLASSIFY_DEMO",
+        "sample.txt",
+        "txt/sample.txt"
+    );
+
+    printf("\nデモログを記録しました\n");
+
+    wait_back_menu();
+}
 
 int main() {
 
@@ -26,7 +46,15 @@ int main() {
     return 0;
 }
 
-
+void wait_back_menu(){
+    printf("メニュー選択画面に戻りますか（0）\n");
+    while (1) {
+        int key = _getch();
+            if (key == '0') {
+                break; // 0 が押されたら抜ける
+            }
+    }
+}
 
 void home_menu() {
 
@@ -54,15 +82,7 @@ void home_menu() {
 
             case 2:
                 log_print();
-
-                printf("メニュー選択画面に戻りますか（0）\n");
-                while (1) {
-                    int key = _getch();
-                    if (key == '0') {
-                        break; // 0 が押されたら抜ける
-                    }
-                }
-
+                wait_back_menu();
                 break;
 
             case 3:
@@ -108,6 +128,9 @@ void classify_menu() {
 
 void tag_menu() {
 
+    char tag[50];
+    char file[256];
+
     const char *menu[] = {
         "タグ一覧",
         "タグを作成する",
@@ -126,22 +149,51 @@ void tag_menu() {
         switch (choice) {
             case 0:
                 listTags();
+                wait_back_menu();
                 break;
 
             case 1:
-                createTag();
+                printf("タグ名を入力: ");
+                scanf("%49s", tag);
+
+                selectFile(file);
+
+                createTag(tag, file);
+                saveTags();
+
+                printf("タグを作成しました\n");
+                wait_back_menu();
                 break;
 
             case 2:
-                deleteTag();
+                selectTag(tag);
+
+                deleteTag(tag);
+                saveTags();
+
+                printf("タグを削除しました\n");
+                wait_back_menu();
                 break;
 
             case 3:
-                addFile();
+                selectTag(tag);
+                selectFile(file);
+
+                addFile(tag, file);
+                saveTags();
+
+                printf("ファイルを追加しました\n");
+                wait_back_menu();
                 break;
 
             case 4:
-                removeFile();
+                selectTag(tag);
+
+                removeFile(tag, file);
+                saveTags();
+
+                printf("ファイルを削除しました\n");
+                wait_back_menu();
                 break;
 
             case 5:

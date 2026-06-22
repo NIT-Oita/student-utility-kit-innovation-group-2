@@ -22,10 +22,10 @@ int select_menu(const char *items[], int count) {
             if (i == index) {
                 // 選択中の項目は色を変えて表示（緑）
                 setColor(10);
-                printf("> %s\n", items[i]);
+                printf("> %d. %s\n", i, items[i]);
                 setColor(7);  // 色を元に戻す（白）
             } else {
-                printf("  %s\n", items[i]);
+                printf("  %d. %s\n", i, items[i]);
             }
         }
 
