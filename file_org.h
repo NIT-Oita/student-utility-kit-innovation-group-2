@@ -7,6 +7,7 @@ typedef struct
 {
     char target_dir[MAX_PATH_LEN];
     char backup_dir[MAX_PATH_LEN];
+
 } Config;
 
 void trim_newline(char *str);
@@ -40,6 +41,24 @@ int organize_files(
     const char *target_dir
 );
 
+int set_target_folder(
+    const char *path
+);
+
+int add_excluded_file(
+    const char *filename
+);
+
+int is_excluded_file(
+    const char *filename
+);
+
+int is_root_path(
+    const char *path
+);
+
 int org(void);
+
+int backup_start(void);
 
 #endif
