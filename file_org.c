@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-//#include "log.h"
+#include "log.h"
 #include "file_org.h"
 
 
