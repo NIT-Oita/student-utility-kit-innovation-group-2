@@ -31,24 +31,29 @@ void name(void)
 
 int main() {
 
+    // 保存されたタグデータを読み込む
     loadTags();
 
+    // 起動画面
     printf("============================\n");
     printf("      ファイル整理ツール      \n");
     printf("============================\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     printf("    Press Enter to Start    \n");
 
+    // Enter キーが読まれるまで，待つ
     while (1) {
         int key = _getch();
         if (key == 13) {   // Enter キー
             break;
         }
     }
-    system("cls");
+
+    system("cls"); // 画面クリア
     home_menu(); // ホーム画面へ進む
-    return 0;
+    return 0; // 終了
 }
 
+// メニュー画面に戻る前の確認
 void wait_back_menu(){
     printf("メニュー選択画面に戻りますか（0）\n");
     while (1) {
@@ -59,6 +64,7 @@ void wait_back_menu(){
     }
 }
 
+// ホームメニュー
 void home_menu() {
 
     const char *menu[] = {
@@ -71,6 +77,7 @@ void home_menu() {
     // 項目数を取得
     int count = sizeof(menu) / sizeof(menu[0]);
 
+    // 選択されたメニューを実行する
     while (1) {
         int choice = select_menu(menu, count);
         system("cls"); // 画面クリア
@@ -94,6 +101,7 @@ void home_menu() {
     }
 }
 
+// 分類メニュー関数
 void classify_menu() {
 
     const char *menu[] = {
@@ -107,6 +115,7 @@ void classify_menu() {
     // 項目数を取得
     int count = sizeof(menu) / sizeof(menu[0]);
 
+    // 選択されたメニューを実行する
     while (1) {
         int choice = select_menu(menu, count);
 
@@ -134,6 +143,7 @@ void classify_menu() {
     }
 }
 
+// タグメニュー関数
 void tag_menu() {
 
     char tag[50];
@@ -148,19 +158,23 @@ void tag_menu() {
         "戻る"
     };
 
+    // 項目数を取得
     int count = sizeof(menu) / sizeof(menu[0]);
 
+     // 選択されたメニューを実行する
     while (1) {
         int choice = select_menu(menu, count);
 
         system("cls");
         switch (choice) {
             case 0:
+                // タグ一覧を表示する
                 listTags();
                 wait_back_menu();
                 break;
 
             case 1:
+                // タグを作成する
                 printf("タグ名を入力: ");
                 scanf("%49s", tag);
 
@@ -174,6 +188,7 @@ void tag_menu() {
                 break;
 
             case 2:
+                // タグを削除する
                 selectTag(tag);
 
                 deleteTag(tag);
@@ -184,6 +199,7 @@ void tag_menu() {
                 break;
 
             case 3:
+                // タグにファイルを追加する
                 selectTag(tag);
                 selectFile(file);
 
@@ -195,6 +211,7 @@ void tag_menu() {
                 break;
 
             case 4:
+                // タグからファイルを削除する
                 selectTag(tag);
 
                 removeFile(tag, file);

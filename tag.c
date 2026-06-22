@@ -21,11 +21,13 @@ int tagCount = 0;
 
 /* ===== 読み込み ===== */
 void loadTags() {
+    // ファイルを開く
     FILE *fp = fopen("tag.txt", "r");
     if (!fp) return;
 
     char line[512];
 
+    // ファイルをTag構造体に取り込む
     while (fgets(line, sizeof(line), fp)) {
 
         char *p = strtok(line, " \n");
