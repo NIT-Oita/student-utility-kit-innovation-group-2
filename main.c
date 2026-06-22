@@ -4,6 +4,7 @@
 #include "ui.h"
 #include "log.h"
 #include "tag.h"
+#include "file_org.h"
 
 void wait_back_menu();
 void home_menu();
@@ -11,7 +12,7 @@ void classify_menu();
 void tag_menu();
 void name(void);
 
-// テスト用
+/*// テスト用
 void name(void)
 {
     printf("DEMO\n");
@@ -26,7 +27,7 @@ void name(void)
     printf("\nデモログを記録しました\n");
 
     wait_back_menu();
-}
+}*/
 
 int main() {
 
@@ -99,6 +100,7 @@ void classify_menu() {
         "分類を開始する",
         "管理フォルダの設定",
         "管理対象外ファイルの設定",
+        "バックアップの実行"
         "戻る"
     };
 
@@ -111,18 +113,22 @@ void classify_menu() {
         system("cls");
         switch (choice) {
             case 0:
-                name();
+                org();
                 break;
 
             case 1:
-                name(); 
+                set_target_directory(); 
                 break;
 
             case 2:
-                name(); 
+                add_excluded_file(); 
                 break;
 
             case 3:
+                set_backup_directory(); 
+                break;
+
+            case 4:
                 return; // ホーム画面に戻る
         }
     }
