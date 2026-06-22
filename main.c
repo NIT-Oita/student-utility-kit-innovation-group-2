@@ -30,6 +30,8 @@ void name(void)
 
 int main() {
 
+    loadTags();
+
     printf("============================\n");
     printf("      ファイル整理ツール      \n");
     printf("============================\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
