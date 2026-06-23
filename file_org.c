@@ -13,7 +13,8 @@
 #define MAX_PATH_LEN 512
  
  
-/* 改行削除 */
+/* 改行削除
+   fgets()で読み込んだ文字列の末尾にある改行を削除 */
 void trim_newline(char *str)
 {
     size_t len = strlen(str);
@@ -26,9 +27,10 @@ void trim_newline(char *str)
  
  
 /*
-    設定読み込み
+    設定ファイル読み込み
+    target.txtから管理フォルダの設定を読み込む
  
-    target.txt
+    target.txt  の内容例：
  
     file C:\test
     safe_copy C:\backup
@@ -44,20 +46,20 @@ int load_config(Config *cfg)
  
     if(fp == NULL)
     {
-        return 1;
+        return 1;  // ファイルが開けない
     }
  
- 
+    // 初期化
     cfg->target_dir[0] = '\0';
     cfg->backup_dir[0] = '\0';
  
  
- 
+    // １行ずつ読み込む
     while(fgets(line,sizeof(line),fp))
     {
         trim_newline(line);
  
- 
+        // "file"で始まる行から、対象フォルダのパスを読み込む
         if(strncmp(line,"file ",5)==0)
         {
             strncpy(
@@ -67,7 +69,7 @@ int load_config(Config *cfg)
             );
         }
  
- 
+        // "safe_copy " で始まる行から、バックアップ先のパスを読み込む
         if(strncmp(line,"safe_copy ",10)==0)
         {
             strncpy(
@@ -82,13 +84,12 @@ int load_config(Config *cfg)
     fclose(fp);
  
  
- 
+    // 項目のチェック
     if(strlen(cfg->target_dir)==0 ||
        strlen(cfg->backup_dir)==0)
     {
         return 1;
     }
- 
  
     return 0;
 }
@@ -100,14 +101,14 @@ int load_config(Config *cfg)
 */
 int mk_dir(const char *path)
 {
- 
+    // 新規作成した場合はログを残す
     if(_mkdir(path)==0)
     {
         log_write("mkdir",path,"");
         return 0;
     }
  
- 
+    // すでに存在している場合
     if(errno==EEXIST)
     {
         return 0;
@@ -130,6 +131,7 @@ int move_file(
  
     if(rename(old_path,new_path)==0)
     {
+        // ログを記録
         log_write(
             "move",
             old_path,
@@ -146,7 +148,7 @@ int move_file(
  
  
 /*
-    バックアップ削除
+    バックアップ削除（フォルダ削除）
 */
 int delete_backup(const char *path)
 {
@@ -162,7 +164,7 @@ int delete_backup(const char *path)
         return 1;
     }
  
- 
+    // 存在しないなら成功扱い
     if(stat(path,&st)!=0)
     {
         return 0;
@@ -230,6 +232,7 @@ int backup_folder(
  
 /*
     復元
+    バックアップし、元のフォルダへコピー
 */
 int restore_folder(
     const char *backup,
@@ -270,7 +273,7 @@ int restore_folder(
  
  
 /*
-    ルートチェック
+    ルートパスを判定
 */
 int is_root_path(const char *path)
 {
@@ -334,7 +337,7 @@ int organize_files(const char *target_dir)
         char *filename = entry->d_name;
  
  
- 
+        // "." と ".." をスキップ
         if(strcmp(filename,".")==0 ||
            strcmp(filename,"..")==0)
         {
@@ -342,7 +345,7 @@ int organize_files(const char *target_dir)
         }
  
  
- 
+        // 除外ファイルのチェック
         if(is_excluded_file(filename))
         {
             continue;
@@ -365,7 +368,7 @@ int organize_files(const char *target_dir)
         struct stat st;
  
  
- 
+        
         if(stat(old_path,&st)!=0)
         {
             continue;
@@ -386,7 +389,7 @@ int organize_files(const char *target_dir)
  
  
  
- 
+        // 拡張子を取得
         char *ext = strrchr(filename,'.');
  
  
@@ -405,7 +408,7 @@ int organize_files(const char *target_dir)
         );
  
  
- 
+        // 拡張子フォルダ作成
         char folder[MAX_PATH_LEN];
  
  
@@ -426,7 +429,7 @@ int organize_files(const char *target_dir)
         }
  
  
- 
+        // 移動先パス生成
         char new_path[MAX_PATH_LEN];
  
  
@@ -440,7 +443,7 @@ int organize_files(const char *target_dir)
         );
  
  
- 
+        // ファイル移動
         if(move_file(old_path,new_path))
         {
             closedir(dir);
@@ -837,12 +840,8 @@ int set_target_folder(
         "safe_copy backup\n"
     );
  
- 
- 
     fclose(fp);
- 
- 
- 
+
     return 0;
 }
  
