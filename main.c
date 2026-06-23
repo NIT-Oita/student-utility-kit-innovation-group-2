@@ -12,7 +12,7 @@ void classify_menu();
 void tag_menu();
 void name(void);
 
-/*// テスト用
+// テスト用
 void name(void)
 {
     printf("DEMO\n");
@@ -27,7 +27,7 @@ void name(void)
     printf("\nデモログを記録しました\n");
 
     wait_back_menu();
-}*/
+}
 
 int main() {
 
@@ -108,7 +108,7 @@ void classify_menu() {
         "分類を開始する",
         "管理フォルダの設定",
         "管理対象外ファイルの設定",
-        "バックアップの実行"
+        "バックアップの実行",
         "戻る"
     };
 
@@ -126,15 +126,40 @@ void classify_menu() {
                 break;
 
             case 1:
-                set_target_directory(); 
+                char path[512];
+
+                printf("管理フォルダを入力: ");
+                scanf("%511s", path);
+
+                if(set_target_folder(path))
+                {
+                    printf("設定に失敗しました\n");
+                }
+                else
+                {
+                    printf("設定しました\n");
+                }
                 break;
 
             case 2:
-                add_excluded_file(); 
+                /*char filename[256];
+
+                printf("除外ファイル名を入力: ");
+                scanf("%255s", filename);
+
+                add_excluded_file(filename);
+                if(add_exclude_file(filename))
+                {
+                    printf("追加に失敗しました\n");
+                }
+                else
+                {
+                    printf("追加しました\n");
+                }*/
                 break;
 
             case 3:
-                set_backup_directory(); 
+                // backup_start(); 
                 break;
 
             case 4:

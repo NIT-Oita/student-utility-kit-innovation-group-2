@@ -61,4 +61,6 @@ int org(void);
 
 int backup_start(void);
 
+int add_exclude_file(const char *filename);
+
 #endif

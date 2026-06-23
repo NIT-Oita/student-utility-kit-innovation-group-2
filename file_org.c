@@ -72,7 +72,7 @@ while(fgets(line,sizeof(line),fp))
 
 fclose(fp);
 
-/* å¿…é ˆé …ç›®ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯å¤±æ•— */
+/* •K{€–Ú‚ª‘¶İ‚µ‚È‚¢ê‡‚Í¸”s */
 if(strlen(cfg->target_dir) == 0 ||
    strlen(cfg->backup_dir) == 0)
 {
@@ -126,10 +126,10 @@ int move(const char *old_path, const char *new_path)
 delete_backup()
 
 
-å¤ã„ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‚’å‰Šé™¤ã™ã‚‹ã€‚
+ŒÃ‚¢ƒoƒbƒNƒAƒbƒv‚ğíœ‚·‚éB
 
-æ¯å›æ–°ã—ã„ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‚’ä½œæˆã™ã‚‹ãŸã‚
-å‰å›ã®ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‚’æ¶ˆã—ã¦ãŠãã€‚
+–ˆ‰ñV‚µ‚¢ƒoƒbƒNƒAƒbƒv‚ğì¬‚·‚é‚½‚ß
+‘O‰ñ‚ÌƒoƒbƒNƒAƒbƒv‚ğÁ‚µ‚Ä‚¨‚­B
 
 
 ==================================================*/
@@ -148,7 +148,7 @@ int delete_backup(const char *backup_dir)
         return 1;
     }
  
-    /* ãƒ•ã‚©ãƒ«ãƒ€ãŒå­˜åœ¨ã—ãªã„ãªã‚‰æˆåŠŸæ‰±ã„ */
+    /* ƒtƒHƒ‹ƒ_‚ª‘¶İ‚µ‚È‚¢‚È‚ç¬Œ÷ˆµ‚¢ */
     if(stat(backup_dir, &st) != 0)
     {
         return 0;
@@ -175,13 +175,13 @@ int delete_backup(const char *backup_dir)
 backup_folder()
 
 
-æ•´ç†å‰ã®çŠ¶æ…‹ã‚’ä¿å­˜ã™ã‚‹ã€‚
+®—‘O‚Ìó‘Ô‚ğ•Û‘¶‚·‚éB
 
-xcopy ã‚’åˆ©ç”¨ã—ã¦ãƒ•ã‚©ãƒ«ãƒ€ã”ã¨ã‚³ãƒ”ãƒ¼ã™ã‚‹ã€‚
+xcopy ‚ğ—˜—p‚µ‚ÄƒtƒHƒ‹ƒ_‚²‚ÆƒRƒs[‚·‚éB
 
-æˆ»ã‚Šå€¤
-    0 : æˆåŠŸ
-    0ä»¥å¤– : å¤±æ•—
+–ß‚è’l
+    0 : ¬Œ÷
+    0ˆÈŠO : ¸”s
 
 
 ==================================================*/
@@ -218,9 +218,9 @@ int backup_folder(
 restore_folder()
 
 
-ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‹ã‚‰å¾©å…ƒã™ã‚‹ã€‚
+ƒoƒbƒNƒAƒbƒv‚©‚ç•œŒ³‚·‚éB
 
-æ•´ç†ä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ãŸå ´åˆã«å‘¼ã°ã‚Œã‚‹ã€‚
+®—’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚½ê‡‚ÉŒÄ‚Î‚ê‚éB
 
 
 ==================================================*/
@@ -257,21 +257,21 @@ int restore_folder(
 organize_files()
 
 
-å¯¾è±¡ãƒ•ã‚©ãƒ«ãƒ€å†…ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª¿ã¹ã‚‹ã€‚
+‘ÎÛƒtƒHƒ‹ƒ_“à‚Ìƒtƒ@ƒCƒ‹‚ğ’²‚×‚éB
 
-æ‹¡å¼µå­ã”ã¨ã«ãƒ•ã‚©ãƒ«ãƒ€ã‚’ä½œæˆã—ã€
-å¯¾å¿œã™ã‚‹ãƒ•ã‚©ãƒ«ãƒ€ã¸ç§»å‹•ã™ã‚‹ã€‚
+Šg’£q‚²‚Æ‚ÉƒtƒHƒ‹ƒ_‚ğì¬‚µA
+‘Î‰‚·‚éƒtƒHƒ‹ƒ_‚ÖˆÚ“®‚·‚éB
 
-ä¾‹
+—á
 
     image.jpg
-        â†“
+        «
 
     jpg/image.jpg
 
-æˆ»ã‚Šå€¤
-    0 : æˆåŠŸ
-    1 : ã‚¨ãƒ©ãƒ¼
+–ß‚è’l
+    0 : ¬Œ÷
+    1 : ƒGƒ‰[
 
 
 ==================================================*/
@@ -315,14 +315,14 @@ int organize_files(const char *target_dir)
             continue;
         }
 
-        /* ç‰¹æ®Šãƒ•ã‚©ãƒ«ãƒ€ã¯ç„¡è¦– */
+        /* “ÁêƒtƒHƒ‹ƒ_‚Í–³‹ */
         if(strcmp(filename,".") == 0 ||
         strcmp(filename,"..") == 0)
         {
             continue;
         }
 
-        /* æ‹¡å¼µå­æ¤œç´¢ */
+        /* Šg’£qŒŸõ */
         char full_path[MAX_PATH_LEN];
 
         snprintf(
@@ -354,7 +354,7 @@ int organize_files(const char *target_dir)
             continue;
         }
 
-        /* ãƒ‰ãƒƒãƒˆã‚’é™¤ã„ãŸæ‹¡å¼µå­ */
+        /* ƒhƒbƒg‚ğœ‚¢‚½Šg’£q */
         char ext_name[64];
         
         strncpy(
@@ -367,7 +367,7 @@ int organize_files(const char *target_dir)
             sizeof(ext_name) - 1
         ] = '\0';
 
-        /* ä½œæˆã™ã‚‹ãƒ•ã‚©ãƒ«ãƒ€ */
+        /* ì¬‚·‚éƒtƒHƒ‹ƒ_ */
         char new_dir[MAX_PATH_LEN];
 
         snprintf(
@@ -384,7 +384,7 @@ int organize_files(const char *target_dir)
             return 1;
         }
 
-        /* ç§»å‹•å…ƒ */
+        /* ˆÚ“®Œ³ */
         char old_path[MAX_PATH_LEN];
 
         snprintf(
@@ -395,7 +395,7 @@ int organize_files(const char *target_dir)
             filename
         );
 
-        /* ç§»å‹•å…ˆ */
+        /* ˆÚ“®æ */
         char new_path[MAX_PATH_LEN];
 
         snprintf(
@@ -424,14 +424,14 @@ int organize_files(const char *target_dir)
 org()
 
 
-ã‚·ã‚¹ãƒ†ãƒ å…¨ä½“ã‚’åˆ¶å¾¡ã™ã‚‹ãƒ¡ã‚¤ãƒ³é–¢æ•°
+ƒVƒXƒeƒ€‘S‘Ì‚ğ§Œä‚·‚éƒƒCƒ“ŠÖ”
 
-å‡¦ç†æ‰‹é †
+ˆ—è‡
 
-â‘  è¨­å®šèª­è¾¼
-â‘¡ ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ä½œæˆ
-â‘¢ ãƒ•ã‚¡ã‚¤ãƒ«æ•´ç†
-â‘£ ã‚¨ãƒ©ãƒ¼ãªã‚‰å¾©å…ƒ
+‡@ İ’è“Ç
+‡A ƒoƒbƒNƒAƒbƒvì¬
+‡B ƒtƒ@ƒCƒ‹®—
+‡C ƒGƒ‰[‚È‚ç•œŒ³
 
 
 ==================================================*/
@@ -439,110 +439,89 @@ int org(void)
 {
     Config cfg;
 
-    /* è¨­å®šèª­è¾¼ */
-    if(load_config(&cfg))
+    /* İ’è“Ç */
+    if (load_config(&cfg))
     {
-        printf("è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‚¨ãƒ©ãƒ¼\n");
+        printf("İ’èƒtƒ@ƒCƒ‹ƒGƒ‰[\n");
         return 1;
     }
 
-    /* åŒã˜ãƒ•ã‚©ãƒ«ãƒ€ã¯ç¦æ­¢ */
-    if(strcmp(
-        cfg.target_dir,
-        cfg.backup_dir
-    ) == 0)
+    /* “¯‚¶ƒtƒHƒ‹ƒ_‚Í‹Ö~ */
+    if (strcmp(cfg.target_dir, cfg.backup_dir) == 0)
     {
-        printf(
-            "ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å…ˆãŒå¯¾è±¡ãƒ•ã‚©ãƒ«ãƒ€ã¨åŒã˜ã§ã™\n"
-        );
+        printf("ƒoƒbƒNƒAƒbƒvæ‚ª‘ÎÛƒtƒHƒ‹ƒ_‚Æ“¯‚¶‚Å‚·\n");
         return 1;
     }
 
-    if(is_root_path(cfg.backup_dir))
+    if (is_root_path(cfg.backup_dir))
     {
-        printf(
-            "ãƒ‰ãƒ©ã‚¤ãƒ–ç›´ä¸‹ã¯æŒ‡å®šã§ãã¾ã›ã‚“\n"
-        );
+        printf("ƒhƒ‰ƒCƒu’¼‰º‚Íw’è‚Å‚«‚Ü‚¹‚ñ\n");
         return 1;
     }
 
-    if(strncmp(
-        cfg.backup_dir,
-        cfg.target_dir,
-        strlen(cfg.target_dir)
-    ) == 0)
+    if (strncmp(cfg.backup_dir, cfg.target_dir, strlen(cfg.target_dir)) == 0)
     {
-        printf(
-            "ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å…ˆãŒå¯¾è±¡ãƒ•ã‚©ãƒ«ãƒ€å†…ã§ã™\n"
-        );
+        printf("ƒoƒbƒNƒAƒbƒvæ‚ª‘ÎÛƒtƒHƒ‹ƒ_“à‚Å‚·\n");
         return 1;
     }
 
-    printf("å¯¾è±¡ãƒ•ã‚©ãƒ«ãƒ€ : %s\n", cfg.target_dir);
-    printf("ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ— : %s\n", cfg.backup_dir);
+    printf("‘ÎÛƒtƒHƒ‹ƒ_ : %s\n", cfg.target_dir);
+    printf("ƒoƒbƒNƒAƒbƒv : %s\n", cfg.backup_dir);
 
-    printf(
-    "ã“ã®å†…å®¹ã§å®Ÿè¡Œã—ã¾ã™ã‹ï¼Ÿ(y/n): "
-    );
-    
+    printf("‚±‚Ì“à—e‚ÅÀs‚µ‚Ü‚·‚©H(y/n): ");
+
+    /* ? stdinˆÀ’è‰»id—vj */
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
     char ans[8];
-    
-    if(
-        fgets(
-            ans,
-            sizeof(ans),
-            stdin
-        )==NULL
-    )
+
+    if (fgets(ans, sizeof(ans), stdin) == NULL)
     {
-        printf("å…¥åŠ›ã‚¨ãƒ©ãƒ¼\n");
-        return 1;
-    }
-    
-    if(ans[0] != 'y' &&
-    ans[0] != 'Y')
-    {
-        printf("ä¸­æ­¢ã—ã¾ã—ãŸ\n");
+        printf("“ü—ÍƒGƒ‰[\n");
         return 1;
     }
 
-    /* å¤ã„ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å‰Šé™¤ */
-    delete_backup(cfg.backup_dir);
-
-    /* ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ä½œæˆ */
-    if(backup_folder(
-            cfg.target_dir,
-            cfg.backup_dir))
+    if (ans[0] != 'y' && ans[0] != 'Y')
     {
-        printf("ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å¤±æ•—\n");
+        printf("’†~‚µ‚Ü‚µ‚½\n");
         return 1;
     }
 
-    /* ãƒ•ã‚¡ã‚¤ãƒ«æ•´ç† */
-    if(organize_files(cfg.target_dir))
+    /* ŒÃ‚¢ƒoƒbƒNƒAƒbƒvíœiƒ`ƒFƒbƒN’Ç‰Áj */
+    if (delete_backup(cfg.backup_dir))
     {
-        printf("ã‚¨ãƒ©ãƒ¼ç™ºç”Ÿ\n");
-        printf("å¾©å…ƒé–‹å§‹\n");
+        printf("ƒoƒbƒNƒAƒbƒvíœ¸”s\n");
+        return 1;
+    }
 
-        /* æ•´ç†é€”ä¸­ã®ãƒ•ã‚©ãƒ«ãƒ€ã‚’å‰Šé™¤ */
-        delete_backup(cfg.target_dir);
+    /* ƒoƒbƒNƒAƒbƒvì¬ */
+    if (backup_folder(cfg.target_dir, cfg.backup_dir))
+    {
+        printf("ƒoƒbƒNƒAƒbƒv¸”s\n");
+        return 1;
+    }
 
-        /* ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‹ã‚‰å¾©å…ƒ */
-        if(
-            restore_folder(
-                cfg.backup_dir,
-                cfg.target_dir
-            )
-        )
+    /* ƒtƒ@ƒCƒ‹®— */
+    if (organize_files(cfg.target_dir))
+    {
+        printf("ƒGƒ‰[”­¶\n");
+        printf("•œŒ³ŠJn\n");
+
+        /* ®—“r’†‚Ì”j‘¹‚ğíœiˆÀ‘S”Åj */
+        system("rmdir /S /Q target_dir > nul 2>&1");
+
+        /* ƒoƒbƒNƒAƒbƒv‚©‚ç•œŒ³ */
+        if (restore_folder(cfg.backup_dir, cfg.target_dir))
         {
-            printf("å¾©å…ƒå¤±æ•—\n");
+            printf("•œŒ³¸”s\n");
             return 1;
         }
 
         return 1;
     }
 
-    printf("æ•´ç†å®Œäº†\n");
+    printf("®—Š®—¹\n");
 
     return 0;
 }
@@ -550,11 +529,11 @@ int org(void)
 /*==================================================
 backup_start()
 
-æ®‹ã£ã¦ã„ã‚‹ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‹ã‚‰å¾©å…ƒã™ã‚‹ã€‚
+c‚Á‚Ä‚¢‚éƒoƒbƒNƒAƒbƒv‚©‚ç•œŒ³‚·‚éB
 
-æˆ»ã‚Šå€¤
-    0 : æˆåŠŸ
-    1 : å¤±æ•—
+–ß‚è’l
+    0 : ¬Œ÷
+    1 : ¸”s
 
 ==================================================*/
 int backup_start(void)
@@ -568,29 +547,29 @@ int backup_start(void)
 
     struct stat st;
 
-    /* ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ãŒå­˜åœ¨ã—ãªã„ */
+    /* ƒoƒbƒNƒAƒbƒv‚ª‘¶İ‚µ‚È‚¢ */
     if(stat(cfg.backup_dir, &st) != 0)
     {
-        printf("ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã¯å­˜åœ¨ã—ã¾ã›ã‚“\n");
+        printf("ƒoƒbƒNƒAƒbƒv‚Í‘¶İ‚µ‚Ü‚¹‚ñ\n");
         return 1;
     }
 
-    printf("ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‚’ç™ºè¦‹\n");
-    printf("å¾©å…ƒé–‹å§‹\n");
+    printf("ƒoƒbƒNƒAƒbƒv‚ğ”­Œ©\n");
+    printf("•œŒ³ŠJn\n");
 
-    /* ç¾åœ¨ã®æ•´ç†æ¸ˆã¿ãƒ•ã‚©ãƒ«ãƒ€å‰Šé™¤ */
+    /* Œ»İ‚Ì®—Ï‚İƒtƒHƒ‹ƒ_íœ */
     delete_backup(cfg.target_dir);
 
-    /* ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‹ã‚‰å¾©å…ƒ */
+    /* ƒoƒbƒNƒAƒbƒv‚©‚ç•œŒ³ */
     if(restore_folder(
         cfg.backup_dir,
         cfg.target_dir))
     {
-        printf("å¾©å…ƒå¤±æ•—\n");
+        printf("•œŒ³¸”s\n");
         return 1;
     }
 
-    printf("å¾©å…ƒå®Œäº†\n");
+    printf("•œŒ³Š®—¹\n");
 
     return 0;
 }
@@ -666,7 +645,7 @@ int add_exclude_file(
         "a"
     );
 
-    if(fp = NULL)
+    if(fp == NULL)
     {
         return 1;
     }
@@ -713,7 +692,7 @@ int is_excluded_file(
             strcmp(
                 line,
                 filename
-            )==NULL
+            )==0
         )
         {
             fclose(fp);
