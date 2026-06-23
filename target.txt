@@ -1,0 +1,2 @@
+file C:\Users\a820\Desktop\プログラミング演習Ⅱ　第2回目
+safe_copy backup

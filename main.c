@@ -106,7 +106,8 @@ void home_menu() {
 void classify_menu() {
 
     const char *menu[] = {
-        "分類を開始する（デモ）",
+        "分類を開始する",
+        "管理フォルダの設定",
         "戻る"
     };
 
@@ -120,10 +121,25 @@ void classify_menu() {
         system("cls");
         switch (choice) {
             case 0:
-                name();
+                org();
+                break;
+            case 1:
+                char path[512];
+ 
+                printf("管理フォルダを入力: ");
+                scanf("%511s", path);
+ 
+                if(set_target_folder(path))
+                {
+                    printf("設定に失敗しました\n");
+                }
+                else
+                {
+                    printf("設定しました\n");
+                }
                 break;
 
-            case 1:
+            case 2:
                 return; // ホーム画面に戻る
         }
     }
