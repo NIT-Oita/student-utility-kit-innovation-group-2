@@ -1,2 +1,0 @@
-file C:/Uzers/admin/Docuents/test_folder
-safe_copy C:/Uzers/admin/Documents/test_backup

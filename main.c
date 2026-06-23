@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <string.h>
 #include "ui.h"
 #include "log.h"
 #include "tag.h"
@@ -12,7 +13,7 @@ void classify_menu();
 void tag_menu();
 void name(void);
 
-// テスト用
+// ファイル整理（デモ）
 void name(void)
 {
     printf("DEMO\n");
@@ -105,10 +106,7 @@ void home_menu() {
 void classify_menu() {
 
     const char *menu[] = {
-        "分類を開始する",
-        "管理フォルダの設定",
-        "管理対象外ファイルの設定",
-        "バックアップの実行",
+        "分類を開始する（デモ）",
         "戻る"
     };
 
@@ -122,47 +120,10 @@ void classify_menu() {
         system("cls");
         switch (choice) {
             case 0:
-                org();
+                name();
                 break;
 
             case 1:
-                char path[512];
-
-                printf("管理フォルダを入力: ");
-                scanf("%511s", path);
-
-                if(set_target_folder(path))
-                {
-                    printf("設定に失敗しました\n");
-                }
-                else
-                {
-                    printf("設定しました\n");
-                }
-                break;
-
-            case 2:
-                /*char filename[256];
-
-                printf("除外ファイル名を入力: ");
-                scanf("%255s", filename);
-
-                add_excluded_file(filename);
-                if(add_exclude_file(filename))
-                {
-                    printf("追加に失敗しました\n");
-                }
-                else
-                {
-                    printf("追加しました\n");
-                }*/
-                break;
-
-            case 3:
-                // backup_start(); 
-                break;
-
-            case 4:
                 return; // ホーム画面に戻る
         }
     }
