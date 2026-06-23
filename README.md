@@ -164,6 +164,12 @@ gcc -Wall -Wextra -fsanitize=address ...
 ## 12. デモ動画 / Demo
 
 > プロジェクト完成後、ここにデモ動画またはスクリーンショットを追加してください。
+<img width="1493" height="879" alt="image" src="https://github.com/user-attachments/assets/5cc12868-fd84-4035-b9c3-5e79ccd7dc62" />
+<img width="849" height="354" alt="image" src="https://github.com/user-attachments/assets/840a4f56-ed32-404d-9b24-56da71e7a287" />
+<img width="574" height="348" alt="image" src="https://github.com/user-attachments/assets/bcd2f6cd-1709-4623-9729-d8c9166c83f4" />
+<img width="875" height="630" alt="image" src="https://github.com/user-attachments/assets/e835e061-05d1-41ed-ae11-c1de8553617e" />
+<img width="840" height="429" alt="image" src="https://github.com/user-attachments/assets/c9509e69-b694-498c-b3ce-807ebf891c3a" />
+
 
 ---
 
