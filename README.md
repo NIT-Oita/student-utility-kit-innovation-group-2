@@ -2,14 +2,15 @@
 
 > ⚠️ **NOTICE / 注意**
 > このREADMEはテンプレートです。**自分たちのプロジェクトの内容に書き換えてください**。
-> （タイトル、テーマ、メンバー名、ファイル名、ビルド手順、デモ動画リンクなどを差し替える）
+> （タイトル、テーマ、メンバー名、ファイル名、ビルド手順、デモ動リンクなどを差し替える）
 > *This is a template. Please edit and customize every section for your actual project.*
 
 ---
 
 ## 1. プロジェクト概要
 
-学校生活の中にある「身近な不便」を1つ選び、**C言語・Makefile・Git** を活用して解決するコマンドラインツールを3人1組で開発する。
+対象フォルダ直下のファイルを拡張子ごとに自動分類し、指定したフォルダへ整理するコマンドラインツールです。
+レポート、画像、ソースコードなどのファイル管理を効率化することを目的としています。
 
 - 期間: 3週間
 - 班構成: 3名
@@ -21,24 +22,16 @@
 
 | # | テーマ | 内容 |
 |---|---|---|
-| 01 | 課題管理 (TODO) | 締切と優先度から課題を優先順位付け |
-| 02 | 成績シミュレータ | 単位取得に必要な期末点を計算 |
-| 03 | 暗記フラッシュカード | テキストから単語を出題、正解率を記録 |
-| 04 | 時間割最適化 | 空き時間から自習プランを提案 |
-| 05 | グループ経費精算 | 最少送金回数で割り勘 |
 | 06 | ファイル整理キット | 拡張子・日付で自動分類 |
-| 07 | 集中タイマー (Pomodoro) | 集中時間をログ・グラフ化 |
-| 08 | 出席記録システム | 単位を落とす前に警告 |
-
 ---
 
 ## 3. 班構成（役割分担）
 
 | メンバー | 役割 | 担当ファイル |
 |---|---|---|
-| **A** | メインロジック（計算・判定） | `logic.c` `logic.h` |
-| **B** | データ管理（ファイルI/O） | `storage.c` `storage.h` |
-| **C** | UI（メニュー・入力チェック） | `ui.c` `main.c` |
+| 江島 | ログ管理機能の実装、UIの作成 | 'log.c' 'log.h' 'ui.c' 'ui.h' |
+| 佐藤 | ファイル整理機能の実装、Makefileの作成 | 'file_org.c' 'file_org.h' 'Makefile' |
+| 橋本 | タグとファイルの登録・追加の機能、入力チェック | 'tag.c'  'tag.h'' |
 
 全員がGitで互いのプルリクエストをレビュー。
 
@@ -48,7 +41,7 @@
 
 ### 必要なもの
 
-- C コンパイラ (`gcc` または `clang`)
+- gcc
 - `make`
 - Git
 
@@ -72,10 +65,10 @@ sudo apt install build-essential
 ### ビルドと実行
 
 ```bash
-git clone https://github.com/<your-account>/<your-repo>.git
-cd <your-repo>
+git clone https://github.com/NIT-Oita/student-utility-kit-innovation-group-2.git
+cd student-utility-kit-innvation-group-2
 make          # コンパイル
-./taskman     # 実行（Windowsは taskman.exe）
+taskman.exe     # 実行（Windowsは taskman.exe）
 ```
 
 ### Makefile ターゲット
@@ -83,9 +76,8 @@ make          # コンパイル
 | コマンド | 動作 |
 |---|---|
 | `make` | コンパイル＆リンク |
-| `make run` | ビルドして実行 |
+| `make done` | ビルドして実行 |
 | `make clean` | 中間ファイルを削除 |
-| `make zip` | 提出用ZIPを作成 |
 
 ---
 
@@ -95,16 +87,11 @@ make          # コンパイル
 your-project/
 ├── Makefile
 ├── README.md
-├── .gitignore
-├── src/
-│   ├── main.c
-│   ├── ui.c   ui.h
-│   ├── logic.c logic.h
-│   └── storage.c
-├── data/
-│   └── tasks.csv
-└── tests/
-    └── test_xxx.c
+├── file_org.c  file_org.h
+├── ui.c  ui.h
+├── log.c  log.h
+├── tag.c  tag.h
+└── main.c
 ```
 
 ---
@@ -113,10 +100,7 @@ your-project/
 
 `data/tasks.csv` の形式（自分のプロジェクトに合わせて書き換える）:
 
-```csv
-id,title,deadline,priority,done
-1,Math homework,2026-05-13,5,0
-```
+このプロジェクトではCSVなどのデータファイルは使用しない。
 
 ---
 
@@ -136,12 +120,10 @@ main ブランチには直接 push しない。
 
 ## 8. テストチェックリスト
 
-- [ ] 負の数値や0を入力しても落ちない
-- [ ] 空入力（Enterのみ）を処理できる
-- [ ] 不正な日付（例: `2026/13/40`）を検出
-- [ ] データファイルが無い場合に新規作成
-- [ ] 壊れたデータ行を無視・警告
-- [ ] 上限を超えた入力を拒否
+- [ ] 存在しないフォルダを指定しても落ちない
+- [ ] 空フォルダでも正常終了する
+- [ ] 同名ファイルがある場合に適切に処理する
+- [ ] 対応していない拡張子を無視できる
 
 推奨コンパイルオプション:
 ```bash
@@ -171,17 +153,23 @@ gcc -Wall -Wextra -fsanitize=address ...
 
 > **編集してください** — Edit this section
 
-- **メンバー A** — 氏名 (学籍番号) — `email@example.com`
-- **メンバー B** — 氏名 (学籍番号) — `email@example.com`
-- **メンバー C** — 氏名 (学籍番号) — `email@example.com`
+- **江島　綾音 (s2508)** — `s2508@oita.kosen-ac.jp`
+- **佐藤　成将 (s2522)** — `s2522@oita.kosen-ac.jp`
+- **橋本　昌樹 (s2532)** — `s2532@oita.kosen-ac.jp`
 
-班番号: **Group ## (要記入)**
+班番号: **Group 02**
 
 ---
 
 ## 12. デモ動画 / Demo
 
 > プロジェクト完成後、ここにデモ動画またはスクリーンショットを追加してください。
+<img width="1493" height="879" alt="image" src="https://github.com/user-attachments/assets/5cc12868-fd84-4035-b9c3-5e79ccd7dc62" />
+<img width="849" height="354" alt="image" src="https://github.com/user-attachments/assets/840a4f56-ed32-404d-9b24-56da71e7a287" />
+<img width="574" height="348" alt="image" src="https://github.com/user-attachments/assets/bcd2f6cd-1709-4623-9729-d8c9166c83f4" />
+<img width="875" height="630" alt="image" src="https://github.com/user-attachments/assets/e835e061-05d1-41ed-ae11-c1de8553617e" />
+<img width="840" height="429" alt="image" src="https://github.com/user-attachments/assets/c9509e69-b694-498c-b3ce-807ebf891c3a" />
+
 
 ---
 
