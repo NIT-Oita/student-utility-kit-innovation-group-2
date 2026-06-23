@@ -6,6 +6,7 @@
 
 #define LOG_FILE "log.txt"
 
+// ログ記録関数
 void log_write(const char *action,const char *src,const char *dst)
 {
     FILE *fp;
@@ -42,10 +43,12 @@ void log_write(const char *action,const char *src,const char *dst)
     fclose(fp);
 }
 
+// ログ呼び出し関数
 void log_print(void)
 {
     FILE *fp;
 
+    // 読みモードで開く
     fp = fopen(LOG_FILE, "r");
 
     if(fp == NULL)
@@ -58,7 +61,9 @@ void log_print(void)
 
     printf("\n");
     printf("========== ログ ==========\n");
+    printf("日時                | 操作   | 元ファイル | 移動先\n");
 
+    // ログをファイルから読み出し，ログを書き出す
     while(fgets(line, sizeof(line), fp) != NULL)
     {
         printf("%s", line);
