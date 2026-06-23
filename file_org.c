@@ -43,22 +43,36 @@ while(fgets(line,sizeof(line),fp))
 {
     trim_newline(line);
 
-    /* file �s�𔭌� */
     if(strncmp(line,"file ",5) == 0)
     {
-        strcpy(cfg->target_dir,line + 5);
+        strncpy(
+            cfg->target_dir,
+            line + 5,
+            sizeof(cfg->target_dir) - 1
+        );
+    
+        cfg->target_dir[
+            sizeof(cfg->target_dir) - 1
+        ] = '\0';
     }
-
-    /* safe_copy �s�𔭌� */
+    
     else if(strncmp(line,"safe_copy ",10) == 0)
     {
-        strcpy(cfg->backup_dir,line + 10);
+        strncpy(
+            cfg->backup_dir,
+            line + 10,
+            sizeof(cfg->backup_dir) - 1
+        );
+    
+        cfg->backup_dir[
+            sizeof(cfg->backup_dir) - 1
+        ] = '\0';
     }
 }
 
 fclose(fp);
 
-/* �K�{���ڂ����݂��Ȃ��ꍇ�͎��s */
+/* 必須項目が存在しない場合は失敗 */
 if(strlen(cfg->target_dir) == 0 ||
    strlen(cfg->backup_dir) == 0)
 {
@@ -112,239 +126,297 @@ int move(const char *old_path, const char *new_path)
 delete_backup()
 
 
-�Â��o�b�N�A�b�v���폜����B
+古いバックアップを削除する。
 
-����V�����o�b�N�A�b�v���쐬���邽��
-�O��̃o�b�N�A�b�v�������Ă����B
+毎回新しいバックアップを作成するため
+前回のバックアップを消しておく。
 
 
 ==================================================*/
 int delete_backup(const char *backup_dir)
 {
     char cmd[1024];
-
-    if (backup_dir == NULL)
+    struct stat st;
+ 
+    if(backup_dir == NULL)
     {
         return 1;
     }
-
-    if (backup_dir[0] == '\0')
+ 
+    if(backup_dir[0] == '\0')
     {
         return 1;
     }
-
-    if (strlen(backup_dir) >= 900)
+ 
+    /* フォルダが存在しないなら成功扱い */
+    if(stat(backup_dir, &st) != 0)
     {
-        return 1;
+        return 0;
     }
-
+ 
     int ret = snprintf(
         cmd,
         sizeof(cmd),
         "rmdir /S /Q \"%s\" > nul 2>&1",
         backup_dir
     );
-
-    if (ret < 0 || ret >= (int)sizeof(cmd))
+ 
+    if(ret < 0 ||
+       ret >= (int)sizeof(cmd))
     {
         return 1;
     }
-
+ 
     ret = system(cmd);
-
-    if (ret != 0)
-    {
-        return 1;
-    }
-
-    return 0;
+ 
+    return (ret == 0) ? 0 : 1;
 }
 /*==================================================
 backup_folder()
 
 
-�����O�̏�Ԃ�ۑ�����B
+整理前の状態を保存する。
 
-xcopy �𗘗p���ăt�H���_���ƃR�s�[����B
+xcopy を利用してフォルダごとコピーする。
 
-�߂�l
-    0 : ����
-    0�ȊO : ���s
+戻り値
+    0 : 成功
+    0以外 : 失敗
 
 
 ==================================================*/
 int backup_folder(
-const char *src,
-const char *dst)
+    const char *src,
+    const char *dst)
 {
-char cmd[2048];
-
-
-sprintf(
-    cmd,
-    "xcopy \"%s\" \"%s\" /E /I /Y > nul",
-    src,
-    dst
-);
-
-return system(cmd);
-
-
+    char cmd[2048];
+    int ret;
+ 
+    if(src == NULL || dst == NULL)
+    {
+        return 1;
+    }
+ 
+    ret = snprintf(
+        cmd,
+        sizeof(cmd),
+        "xcopy \"%s\" \"%s\" /E /I /Y > nul",
+        src,
+        dst
+    );
+ 
+    if(ret < 0 ||
+       ret >= (int)sizeof(cmd))
+    {
+        return 1;
+    }
+ 
+    return system(cmd);
 }
 
 /*==================================================
 restore_folder()
 
 
-�o�b�N�A�b�v���畜������B
+バックアップから復元する。
 
-�������ɃG���[�����������ꍇ�ɌĂ΂��B
+整理中にエラーが発生した場合に呼ばれる。
 
 
 ==================================================*/
 int restore_folder(
-const char *backup,
-const char *target)
+    const char *backup,
+    const char *target)
 {
-char cmd[2048];
-
-
-sprintf(
-    cmd,
-    "xcopy \"%s\" \"%s\" /E /I /Y > nul",
-    backup,
-    target
-);
-
-return system(cmd);
-
-
+    char cmd[2048];
+    int ret;
+ 
+    if(backup == NULL || target == NULL)
+    {
+        return 1;
+    }
+ 
+    ret = snprintf(
+        cmd,
+        sizeof(cmd),
+        "xcopy \"%s\" \"%s\" /E /I /Y > nul",
+        backup,
+        target
+    );
+ 
+    if(ret < 0 ||
+       ret >= (int)sizeof(cmd))
+    {
+        return 1;
+    }
+ 
+    return system(cmd);
 }
 
 /*==================================================
 organize_files()
 
 
-�Ώۃt�H���_���̃t�@�C���𒲂ׂ�B
+対象フォルダ内のファイルを調べる。
 
-�g���q���ƂɃt�H���_���쐬���A
-�Ή�����t�H���_�ֈړ�����B
+拡張子ごとにフォルダを作成し、
+対応するフォルダへ移動する。
 
-��
+例
 
     image.jpg
-        ��
+        ↓
 
     jpg/image.jpg
 
-�߂�l
-    0 : ����
-    1 : �G���[
+戻り値
+    0 : 成功
+    1 : エラー
 
 
 ==================================================*/
 int organize_files(const char *target_dir)
 {
-DIR *dir = opendir(target_dir);
-
-
-if(dir == NULL)
-{
-    return 1;
-}
-
-struct dirent *entry;
-
-while((entry = readdir(dir)) != NULL)
-{
-    char *filename = entry->d_name;
-
-    /* ����t�H���_�͖��� */
-    if(strcmp(filename,".") == 0 ||
-       strcmp(filename,"..") == 0)
+    if(target_dir == NULL)
     {
-        continue;
+        return 1;
     }
-
-    /* �g���q���� */
-    char full_path[MAX_PATH_LEN];
-
-    sprintf(
-        full_path,
-        "%s/%s",
-        target_dir,
-        filename
-    );
+    
+    if(target_dir[0] == '\0')
+    {
+        return 1;
+    }
 
     struct stat st;
 
-    if(stat(full_path, &st) == 0)
+    if(stat(target_dir, &st) != 0){
+        return 1;
+    }
+
+    DIR *dir = opendir(target_dir);
+
+    if(dir == NULL)
     {
-        if(st.st_mode & S_IFDIR)
+        return 1;
+    }
+
+    struct dirent *entry;
+
+    while((entry = readdir(dir)) != NULL)
+    {
+        char *filename = entry->d_name;
+
+        if(
+            is_excluded_file(
+                filename
+            )
+        )
         {
             continue;
         }
+
+        /* 特殊フォルダは無視 */
+        if(strcmp(filename,".") == 0 ||
+        strcmp(filename,"..") == 0)
+        {
+            continue;
+        }
+
+        /* 拡張子検索 */
+        char full_path[MAX_PATH_LEN];
+
+        snprintf(
+            full_path,
+            sizeof(full_path),
+            "%s/%s",
+            target_dir,
+            filename
+        );
+
+        struct stat st;
+
+        if(S_ISDIR(st.st_mode))
+        {
+            if(organize_files(full_path))
+            {
+                closedir(dir);
+                return 1;
+            }
+        
+            continue;
+        }
+ 
+
+        char *ext = strrchr(filename,'.');
+
+        if(ext == NULL)
+        {
+            continue;
+        }
+
+        /* ドットを除いた拡張子 */
+        char ext_name[64];
+        
+        strncpy(
+            ext_name,
+            ext + 1,
+            sizeof(ext_name) - 1
+        );
+        
+        ext_name[
+            sizeof(ext_name) - 1
+        ] = '\0';
+
+        /* 作成するフォルダ */
+        char new_dir[MAX_PATH_LEN];
+
+        snprintf(
+            new_dir,
+            sizeof(new_dir),
+            "%s/%s",
+            target_dir,
+            ext_name
+        );
+
+        if(mk_dir(new_dir))
+        {
+            closedir(dir);
+            return 1;
+        }
+
+        /* 移動元 */
+        char old_path[MAX_PATH_LEN];
+
+        snprintf(
+            old_path,
+            sizeof(old_path),
+            "%s/%s",
+            target_dir,
+            filename
+        );
+
+        /* 移動先 */
+        char new_path[MAX_PATH_LEN];
+
+        snprintf(
+            new_path,
+            sizeof(new_path),
+            "%s/%s/%s",
+            target_dir,
+            ext_name,
+            filename
+        );
+
+        if(move(old_path,new_path))
+        {
+            closedir(dir);
+            return 1;
+        }
     }
 
-    char *ext = strrchr(filename,'.');
+    closedir(dir);
 
-    if(ext == NULL)
-    {
-        continue;
-    }
-
-    /* �h�b�g���������g���q */
-    char ext_name[64];
-    strcpy(ext_name,ext + 1);
-
-    /* �쐬����t�H���_ */
-    char new_dir[MAX_PATH_LEN];
-
-    sprintf(
-        new_dir,
-        "%s/%s",
-        target_dir,
-        ext_name
-    );
-
-    if(mk_dir(new_dir))
-    {
-        closedir(dir);
-        return 1;
-    }
-
-    /* �ړ��� */
-    char old_path[MAX_PATH_LEN];
-
-    sprintf(
-        old_path,
-        "%s/%s",
-        target_dir,
-        filename
-    );
-
-    /* �ړ��� */
-    char new_path[MAX_PATH_LEN];
-
-    sprintf(
-        new_path,
-        "%s/%s/%s",
-        target_dir,
-        ext_name,
-        filename
-    );
-
-    if(move(old_path,new_path))
-    {
-        closedir(dir);
-        return 1;
-    }
-}
-
-closedir(dir);
-
-return 0;
-
+    return 0;
 
 }
 
@@ -352,14 +424,14 @@ return 0;
 org()
 
 
-�V�X�e���S�̂𐧌䂷�郁�C���֐�
+システム全体を制御するメイン関数
 
-�����菇
+処理手順
 
-�@ �ݒ�Ǎ�
-�A �o�b�N�A�b�v�쐬
-�B �t�@�C������
-�C �G���[�Ȃ畜��
+① 設定読込
+② バックアップ作成
+③ ファイル整理
+④ エラーなら復元
 
 
 ==================================================*/
@@ -367,47 +439,110 @@ int org(void)
 {
     Config cfg;
 
-    /* �ݒ�Ǎ� */
+    /* 設定読込 */
     if(load_config(&cfg))
     {
-        printf("�ݒ�t�@�C���G���[\n");
+        printf("設定ファイルエラー\n");
         return 1;
     }
 
-    printf("�Ώۃt�H���_ : %s\n", cfg.target_dir);
-    printf("�o�b�N�A�b�v : %s\n", cfg.backup_dir);
+    /* 同じフォルダは禁止 */
+    if(strcmp(
+        cfg.target_dir,
+        cfg.backup_dir
+    ) == 0)
+    {
+        printf(
+            "バックアップ先が対象フォルダと同じです\n"
+        );
+        return 1;
+    }
 
-    /* �Â��o�b�N�A�b�v�폜 */
+    if(is_root_path(cfg.backup_dir))
+    {
+        printf(
+            "ドライブ直下は指定できません\n"
+        );
+        return 1;
+    }
+
+    if(strncmp(
+        cfg.backup_dir,
+        cfg.target_dir,
+        strlen(cfg.target_dir)
+    ) == 0)
+    {
+        printf(
+            "バックアップ先が対象フォルダ内です\n"
+        );
+        return 1;
+    }
+
+    printf("対象フォルダ : %s\n", cfg.target_dir);
+    printf("バックアップ : %s\n", cfg.backup_dir);
+
+    printf(
+    "この内容で実行しますか？(y/n): "
+    );
+    
+    char ans[8];
+    
+    if(
+        fgets(
+            ans,
+            sizeof(ans),
+            stdin
+        )==NULL
+    )
+    {
+        printf("入力エラー\n");
+        return 1;
+    }
+    
+    if(ans[0] != 'y' &&
+    ans[0] != 'Y')
+    {
+        printf("中止しました\n");
+        return 1;
+    }
+
+    /* 古いバックアップ削除 */
     delete_backup(cfg.backup_dir);
 
-    /* �o�b�N�A�b�v�쐬 */
+    /* バックアップ作成 */
     if(backup_folder(
             cfg.target_dir,
             cfg.backup_dir))
     {
-        printf("�o�b�N�A�b�v���s\n");
+        printf("バックアップ失敗\n");
         return 1;
     }
 
-    /* �t�@�C������ */
+    /* ファイル整理 */
     if(organize_files(cfg.target_dir))
     {
-        printf("�G���[����\n");
-        printf("�����J�n\n");
+        printf("エラー発生\n");
+        printf("復元開始\n");
 
-        /* �����r���̃t�H���_���폜 */
+        /* 整理途中のフォルダを削除 */
         delete_backup(cfg.target_dir);
 
-        /* �o�b�N�A�b�v���畜�� */
-        restore_folder(
-            cfg.backup_dir,
-            cfg.target_dir
-        );
+        /* バックアップから復元 */
+        if(
+            restore_folder(
+                cfg.backup_dir,
+                cfg.target_dir
+            )
+        )
+        {
+            printf("復元失敗\n");
+            return 1;
+        }
 
         return 1;
     }
 
-    printf("��������\n");
+    printf("整理完了\n");
 
     return 0;
 }
@@ -415,11 +550,11 @@ int org(void)
 /*==================================================
 backup_start()
 
-�c���Ă���o�b�N�A�b�v���畜������B
+残っているバックアップから復元する。
 
-�߂�l
-    0 : ����
-    1 : ���s
+戻り値
+    0 : 成功
+    1 : 失敗
 
 ==================================================*/
 int backup_start(void)
@@ -433,29 +568,160 @@ int backup_start(void)
 
     struct stat st;
 
-    /* �o�b�N�A�b�v�����݂��Ȃ� */
+    /* バックアップが存在しない */
     if(stat(cfg.backup_dir, &st) != 0)
     {
-        printf("�o�b�N�A�b�v�͑��݂��܂���\n");
+        printf("バックアップは存在しません\n");
         return 1;
     }
 
-    printf("�o�b�N�A�b�v�𔭌�\n");
-    printf("�����J�n\n");
+    printf("バックアップを発見\n");
+    printf("復元開始\n");
 
-    /* ���݂̐����ς݃t�H���_�폜 */
+    /* 現在の整理済みフォルダ削除 */
     delete_backup(cfg.target_dir);
 
-    /* �o�b�N�A�b�v���畜�� */
+    /* バックアップから復元 */
     if(restore_folder(
-            cfg.backup_dir,
-            cfg.target_dir))
+        cfg.backup_dir,
+        cfg.target_dir))
     {
-        printf("�������s\n");
+        printf("復元失敗\n");
         return 1;
     }
 
-    printf("��������\n");
+    printf("復元完了\n");
+
+    return 0;
+}
+
+int is_root_path(const char *path)
+{
+    if(path == NULL)
+    {
+        return 1;
+    }
+ 
+    if(strlen(path) == 2 &&
+       path[1] == ':')
+    {
+        return 1;
+    }
+ 
+    if(strlen(path) == 3 &&
+       path[1] == ':' &&
+       (path[2] == '\\' ||
+        path[2] == '/'))
+    {
+        return 1;
+    }
+ 
+    return 0;
+}
+
+int set_target_folder(
+    const char *path
+)
+{
+    FILE *fp;
+
+    if(path==NULL){
+        return 1;
+    }
+
+    fp = fopen(
+        "target.txt",
+        "w"
+    );
+
+    if(fp==NULL)
+    {
+        return 1;
+    }
+
+    fprintf(
+        fp,
+        "file %s\n",
+        path
+    );
+
+    fclose(fp);
+
+    return 0;
+}
+
+int add_exclude_file(
+    const char *filename
+)
+{
+    if(filename==NULL)
+    {
+        return 1;
+    }
+ 
+    FILE *fp;
+
+    fp=fopen(
+        "exclude.txt",
+        "a"
+    );
+
+    if(fp = NULL)
+    {
+        return 1;
+    }
+
+    fprintf
+    (
+        fp,
+        "%s\n",
+        filename
+    );
+
+    fclose(fp);
+
+    return 0;
+}
+
+int is_excluded_file(
+    const char *filename
+)
+{
+    FILE *fp;
+    char line[256];
+
+    fp=fopen(
+        "exclude.txt",
+        "r"
+    );
+
+    if(fp==NULL){
+        return 0;
+    }
+
+    while(
+        fgets(
+            line,
+            sizeof(line),
+            fp
+        )
+    )
+    {
+        trim_newline(line);
+
+        if(
+            strcmp(
+                line,
+                filename
+            )==NULL
+        )
+        {
+            fclose(fp);
+            return 1;
+        }
+    }
+
+    fclose(fp);
 
     return 0;
 }
